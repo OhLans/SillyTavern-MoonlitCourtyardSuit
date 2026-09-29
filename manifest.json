@@ -1,0 +1,12 @@
+{
+    "display_name": "Moonlit Courtyard Suit",
+    "description": "Moonlit Echoes companion: Navigator, Character Panels, and local SVG icons in one modular extension.",
+    "loading_order": 65,
+    "requires": [],
+    "optional": ["SillyTavern-MoonlitEchoesTheme"],
+    "js": "index.js",
+    "css": "style.css",
+    "author": "Lans + ChatGPT",
+    "version": "1.0.0",
+    "license": "AGPL-3.0"
+}
