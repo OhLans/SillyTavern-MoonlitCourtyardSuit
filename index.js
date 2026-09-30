@@ -40,7 +40,7 @@ function init() {
     for (const delay of [150, 500, 1200, 2500]) {
         startupTimers.push(setTimeout(refresh, delay));
     }
-    console.info('[Moonlit Courtyard Suit] v1.0.1 loaded');
+    console.info('[Moonlit Courtyard Suit] v1.0.2 loaded');
 }
 
 window.addEventListener('pagehide', event => {

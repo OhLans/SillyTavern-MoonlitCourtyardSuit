@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.2 — 2026-09-30
+
+- Aligned AI and World Info with the mirrored spacing and edge inset of the
+  right-hand controls while AI Configuration is open.
+- Hid the thin header/drawer divider in that state, restoring it on close.
+- Kept the centered title, normal rail layout, Moonlit icon sizing and blur,
+  and native handlers. The adjustment uses CSS without additional runtime work.
+
 ## 1.0.1 — 2026-09-30
 
 - Opening AI Configuration hides the vertical rail and shifts AI and World Info

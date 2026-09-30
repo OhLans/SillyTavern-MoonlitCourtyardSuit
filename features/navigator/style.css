@@ -4,6 +4,8 @@
     /* Follow Moonlit Echoes instead of maintaining a second sizing system. */
     --rn-top: var(--topBarBlockSize, 42px);
     --rn-switch-size: calc(var(--topBarIconSize, 24px) + 2px);
+    --rn-top-inset: 10px;
+    --rn-switch-gap: 6px;
 
     /* Larger portrait buttons used in the left manager section. */
     --rn-manager-size: 42px;
@@ -72,7 +74,7 @@
         grid-template-columns: 1fr auto 1fr;
         align-items: center;
         gap: 8px;
-        padding: 0 10px;
+        padding: 0 var(--rn-top-inset);
         box-sizing: border-box;
         color: var(--rn-text);
         /*
@@ -622,7 +624,7 @@
 
     #rn-top-actions {
         justify-self: end;
-        width: calc((var(--rn-switch-size) * 2) + 6px);
+        width: calc((var(--rn-switch-size) * 2) + var(--rn-switch-gap));
         height: var(--rn-top);
         min-height: var(--rn-top);
         pointer-events: none;
@@ -673,11 +675,11 @@
 
     /* Same order as before: Character on the left, Persona on the right. */
     body.rivelle-navigator-enabled #rightNavHolder > .drawer-toggle {
-        right: calc(10px + var(--rn-switch-size) + 6px) !important;
+        right: calc(var(--rn-top-inset) + var(--rn-switch-size) + var(--rn-switch-gap)) !important;
     }
 
     body.rivelle-navigator-enabled #persona-management-button > .drawer-toggle {
-        right: 10px !important;
+        right: var(--rn-top-inset) !important;
     }
 
     body.rivelle-navigator-enabled #rightNavHolder > .drawer-toggle > .drawer-icon,
@@ -853,7 +855,7 @@
      * AI Configuration temporarily folds the rail into the header. Keep the
      * original nodes and rail layout: visibility also removes hidden controls
      * from keyboard/pointer navigation without collapsing the hotswap scroller.
-     * The two leading buttons advance by the same single rail-width slot.
+     * Mirror the right-hand native controls' edge inset and spacing.
      */
     body.rn-ai-config-open #rn-left-rail {
         visibility: hidden;
@@ -866,7 +868,12 @@
 
     body.rn-ai-config-open #rn-primary-action {
         visibility: visible;
-        left: var(--rn-rail);
+        left: var(--rn-top-inset);
+        width: var(--rn-switch-size);
+    }
+
+    body.rn-ai-config-open #rn-primary-action > .rn-primary-button {
+        width: 100%;
     }
 
     body.rn-ai-config-open #rn-top-bar {
@@ -875,12 +882,30 @@
          * Left + padding also cancel out during the existing close transition.
          */
         left: 0;
-        padding-left: calc(var(--rn-rail) + 10px);
+        padding-left: calc(var(--rn-rail) + var(--rn-top-inset));
+        border-bottom-color: transparent;
         transition: none;
     }
 
     body.rn-ai-config-open #rn-top-worldinfo {
-        margin-left: var(--rn-rail);
+        position: relative;
+        left: calc(var(--rn-switch-size) + var(--rn-switch-gap) - var(--rn-rail));
+        min-width: var(--rn-switch-size);
+    }
+
+    body.rn-ai-config-open #rn-top-worldinfo > .stwii--trigger {
+        width: var(--rn-switch-size) !important;
+    }
+
+    /* Moonlit draws the same boundary on the native header and drawer.
+     * Hide its color, retaining border widths so the content does not jump.
+     */
+    body.rn-ai-config-open #top-settings-holder {
+        border-bottom-color: transparent !important;
+    }
+
+    body.rn-ai-config-open #left-nav-panel {
+        border-top-color: transparent !important;
     }
 
     /* A native/keyboard open may happen while the rail is manually collapsed.
