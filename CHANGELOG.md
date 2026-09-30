@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.1 — 2026-09-30
+
+- Opening AI Configuration hides the vertical rail and shifts AI and World Info
+  one slot right together. Closing it restores their positions and the rail.
+- Retained the original buttons, native handlers, favorites scroll layout, and
+  any manually collapsed rail preference. Moonlit still controls the glass.
+- Reused the existing native drawer observer with guarded class updates; no
+  polling, extra observers, or layout measurements were added.
+- Corrected open-state detection for drawers that remain pinned after closing.
+
 ## 1.0.0 — 2026-09-29
 
 First combined release from Navigator 1.4.7, Character Panels 0.5.16, and Icons

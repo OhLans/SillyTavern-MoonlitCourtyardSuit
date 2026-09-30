@@ -89,7 +89,7 @@
         isolation: isolate;
         backface-visibility: hidden;
         pointer-events: auto !important;
-        transition: left .18s ease;
+        transition: left .18s ease, padding-left .18s ease;
     }
 
 
@@ -847,5 +847,46 @@
         background: var(--rn-surface);
         border-color: var(--rn-line);
         border-left: 0;
+    }
+
+    /*
+     * AI Configuration temporarily folds the rail into the header. Keep the
+     * original nodes and rail layout: visibility also removes hidden controls
+     * from keyboard/pointer navigation without collapsing the hotswap scroller.
+     * The two leading buttons advance by the same single rail-width slot.
+     */
+    body.rn-ai-config-open #rn-left-rail {
+        visibility: hidden;
+        pointer-events: none !important;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        transform: none;
+        transition: none;
+    }
+
+    body.rn-ai-config-open #rn-primary-action {
+        visibility: visible;
+        left: var(--rn-rail);
+    }
+
+    body.rn-ai-config-open #rn-top-bar {
+        /* Extend the same glass surface across the vacant corner, while
+         * keeping the grid (and centered chat identity) in its original place.
+         * Left + padding also cancel out during the existing close transition.
+         */
+        left: 0;
+        padding-left: calc(var(--rn-rail) + 10px);
+        transition: none;
+    }
+
+    body.rn-ai-config-open #rn-top-worldinfo {
+        margin-left: var(--rn-rail);
+    }
+
+    /* A native/keyboard open may happen while the rail is manually collapsed.
+     * Preserve rn-collapsed so closing AI restores that previous preference.
+     */
+    body.rn-ai-config-open #rn-reopen {
+        display: none;
     }
 }

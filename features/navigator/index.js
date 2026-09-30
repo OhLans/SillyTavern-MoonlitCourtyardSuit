@@ -582,22 +582,25 @@ function panelIsOpen(item) {
     const panel = $(item.panel);
     if (!panel) return false;
 
-    return panel.classList.contains('openDrawer') ||
-        panel.classList.contains('open') ||
-        panel.classList.contains('pinnedOpen');
+    // Pinning prevents outside-click dismissal; it survives manually closing
+    // the drawer, so it must not be treated as an open state.
+    return panel.classList.contains('openDrawer') || panel.classList.contains('open');
 }
 
 function syncActiveStates() {
-    ALL_ITEMS.forEach(item => {
-        const button = $(`[data-rn-key="${item.key}"]`);
-        if (button) toggleClass(button, 'active', panelIsOpen(item));
-    });
+    ALL_ITEMS.forEach(syncOneActiveState);
 }
 
 
 function syncOneActiveState(item) {
+    const open = panelIsOpen(item);
     const button = $(`[data-rn-key="${item.key}"]`);
-    if (button) toggleClass(button, 'active', panelIsOpen(item));
+    if (button) toggleClass(button, 'active', open);
+    if (item === AI_CONFIG) {
+        // Reuse the native panel observer: no click-derived state, DOM moves,
+        // layout reads, or extra observers are needed for the header shift.
+        toggleClass(document.body, 'rn-ai-config-open', open);
+    }
 }
 
 function setupNativeObservers() {
