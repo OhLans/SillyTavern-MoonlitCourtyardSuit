@@ -1,5 +1,25 @@
 # Changelog
 
+## 1.1.0 — 2026-10-01
+
+- Added a separate Persona Panels feature, controlled by `personaPanels` in
+  `features.js`, using SillyTavern's original controls and handlers.
+- Kept the native circular grid and replaced the alternate list presentation
+  with rounded, image-only banners. Search, sorting, pagination, selection and
+  the native grid preference continue to work as before.
+- Added a current-persona portrait and an independent layout button: portrait
+  beside the text, or a wide banner with an overlapping avatar and text below.
+  The header choice is saved in extension settings. Both use the persona image.
+- Replaced current-persona action glyphs with text; exposed the native lorebook
+  link directly while retaining any additional actions supplied by extensions.
+- Grouped create, backup, restore and usage under Actions; added independent
+  Connections and Global Settings dropdowns and a smaller native Position row.
+- Preserved native inputs, lock states, image uploads, token counting and editor
+  maximize. Added keyboard access and restored native nodes during disposal.
+- Used native persona events, frame batching and targeted observers; no polling,
+  full-panel subtree monitoring or computed-style reads. Paginated cards are
+  held weakly so removed pages can be garbage-collected.
+
 ## 1.0.2 — 2026-09-30
 
 - Aligned AI and World Info with the mirrored spacing and edge inset of the

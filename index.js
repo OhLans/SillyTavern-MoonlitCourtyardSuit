@@ -1,6 +1,7 @@
 import { features } from './features.js';
 import * as navigator from './features/navigator/index.js';
 import * as characterPanels from './features/character-panels/index.js';
+import * as personaPanels from './features/persona-panels/index.js';
 import * as icons from './features/icons/index.js';
 import { createFrameTask, onSillyTavernEvents, refreshEventBindings, disposeEventBindings } from './core/runtime.js';
 
@@ -33,6 +34,10 @@ function init() {
         characterPanels.init();
         modules.push(characterPanels);
     }
+    if (features.personaPanels) {
+        personaPanels.init();
+        modules.push(personaPanels);
+    }
 
     onSillyTavernEvents(['APP_READY', 'EXTENSIONS_FIRST_LOAD'], scheduleRefresh);
     // One bounded startup sequence covers native/companion controls arriving
@@ -40,7 +45,7 @@ function init() {
     for (const delay of [150, 500, 1200, 2500]) {
         startupTimers.push(setTimeout(refresh, delay));
     }
-    console.info('[Moonlit Courtyard Suit] v1.0.2 loaded');
+    console.info('[Moonlit Courtyard Suit] v1.1.0 loaded');
 }
 
 window.addEventListener('pagehide', event => {

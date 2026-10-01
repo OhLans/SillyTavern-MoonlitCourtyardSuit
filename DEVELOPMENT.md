@@ -11,9 +11,10 @@
 | `features/navigator/style.css` | Navigator geometry and Moonlit glass surfaces |
 | `features/character-panels/index.js` | Native list/editor control placement and persistent menus |
 | `features/character-panels/style.css` | List toolbar, editor layout, native field presentation |
+| `features/persona-panels/` | Native persona controls, banner list and current-persona layouts, persistent dropdowns |
 | `features/icons/` | SVG masks and WorldInfo Info icon child |
 | `assets/icons/` | Local SVGs, unchanged from the supplied Icons archive |
-| `style.css` | CSS import order: Navigator, Character Panels, Icons |
+| `style.css` | CSS import order: Navigator, Character Panels, Persona Panels, Icons |
 
 SillyTavern loads the root JavaScript as an ES module. Submodules use relative
 imports; there are no hard-coded installation-folder URLs. The SVG URLs are
@@ -37,6 +38,35 @@ relative to `features/icons/style.css`.
 - `cleanup()` is for page disposal, not a supported hot-disable API. Developer
   feature changes require a reload. Page disposal runs on `pagehide`, not
   `beforeunload`, so cancelling an unsaved-changes prompt cannot dismantle the UI.
+
+## Persona Panels (1.1.0)
+
+The native `persona_grid_toggle` and `user_avatar_block.gridView` still own the
+list view and its preference. Banner styling applies only outside `gridView`;
+the circular grid is not restyled. The independent current-persona view is saved
+as `extensionSettings.moonlitCourtyardSuit.personaHeaderView`.
+
+Both portrait and banner use the existing persona image; there is no second
+image store or upload endpoint. The feature reads SillyTavern's live
+`user_avatar` binding from `scripts/personas.js` so filtering or paging out the
+selected card cannot change the header. Native persona events and a small list
+child observer keep it current. There is no observer of the persona subtree's
+attributes, no polling and no computed-style lookup in this module.
+
+Keep native controls and their IDs intact. The text actions are their original
+nodes. The explicit lorebook link dispatches the existing dropdown's change
+event; extra dropdown options from other extensions remain accessible. Original
+inputs, confirmations, upload/crop flow and editor maximize stay with SillyTavern.
+Dropdowns use independent native `details` elements and stay open until toggled.
+
+Chromium checks used SillyTavern markup and Moonlit CSS with simulated native
+handlers. They covered original-node identity and action routing, both layouts,
+native circular-grid geometry, filtering out the selected persona, persisted
+header preference, input/depth/settings controls, late additional actions,
+mobile overflow, cleanup and zero hero mutations from 50 unchanged persona
+updates. Existing Navigator/Character Panels DOM regressions also passed.
+These are fixture checks, not an end-to-end test of a live SillyTavern server or
+an FPS benchmark on the user's computer.
 
 ## Verification performed for 1.0.0
 
@@ -81,7 +111,8 @@ on the actual installation.
 
 - SillyTavern staging `bc81b9f7e33f39afe3f919a66faaf93079276a1c`:
   `public/index.html`, `scripts/events.js`, `scripts/st-context.js`,
-  `scripts/extensions.js`, and `lib/eventemitter.js`.
+  `scripts/extensions.js`, `scripts/personas.js`, `scripts/keyboard.js`,
+  `css/toggle-dependent.css`, and `lib/eventemitter.js`.
 - Moonlit Echoes main `5336f368a41871275317c60a5bc9a806d59f4000`:
   `style.css` and `src/bootstrap/lifecycle-hooks.js`.
 

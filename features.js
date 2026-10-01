@@ -3,5 +3,6 @@
 export const features = Object.freeze({
     navigator: true,
     characterPanels: true,
+    personaPanels: true,
     icons: true, // Requires Navigator; portraits and native clicks stay native.
 });
