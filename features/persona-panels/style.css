@@ -13,21 +13,62 @@
     min-width: 0;
 }
 
+.rpp-enabled #persona-management-block {
+    align-items: stretch;
+    gap: 0;
+}
+
+.rpp-enabled .persona_management_left_column {
+    padding-right: 16px;
+}
+
 .rpp-enabled .persona_management_right_column {
-    padding-left: 4px;
+    padding-left: 16px;
+    border-left: 1px solid var(--rpp-line);
+}
+
+.rpp-manager-heading,
+.rpp-current-heading {
+    display: flex;
+    align-items: center;
+    min-height: 34px;
+    gap: 8px;
+    margin: 0 0 12px;
+}
+
+#PersonaManagement.rpp-enabled .rpp-manager-heading,
+#PersonaManagement.rpp-enabled .rpp-manager-heading > .flex-container {
+    align-items: center !important;
+}
+
+#PersonaManagement.rpp-enabled .rpp-manager-heading h3 {
+    margin: 0 !important;
+    font-size: 1.04rem;
+    line-height: 24px;
+    white-space: normal;
 }
 
 .rpp-list-tools {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: start;
-    gap: 10px;
-    margin: 8px 0 12px;
+    position: relative;
+    margin: 0 0 12px;
+}
+
+#rpp-actions > summary {
+    margin: 0 auto;
+}
+
+.rpp-list-tools #persona_grid_toggle {
+    position: absolute;
+    right: 0;
+    top: 0;
+    margin: 0;
 }
 
 .rpp-search-tools {
     flex-wrap: nowrap;
     gap: 6px;
+    width: 100%;
+    margin-bottom: 0;
 }
 
 .rpp-search-tools #persona_search_bar {
@@ -35,7 +76,15 @@
 }
 
 .rpp-pagination {
-    margin: 0 0 12px;
+    display: flex;
+    justify-content: center;
+    margin: 0;
+    width: 100%;
+}
+
+.rpp-pagination #persona_pagination_container {
+    flex: 0 1 auto;
+    min-width: 0;
 }
 
 .rpp-dropdown {
@@ -91,15 +140,36 @@
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
+    justify-content: center;
 }
 
-#rpp-actions-content > .menu_button {
+.rpp-manager-actions {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    margin-bottom: 4px;
+}
+
+.rpp-manager-actions > .menu_button {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    padding: 4px;
     margin: 0;
-    font-size: .82em;
 }
 
-#rpp-actions-content > .menu_button > i {
+.rpp-manager-actions > .menu_button > :not(.rpp-action-icon) {
     display: none;
+}
+
+.rpp-action-icon,
+.rpp-action-icon svg {
+    display: block;
+    width: 18px;
+    height: 18px;
+    pointer-events: none;
 }
 
 /* Image-only nameplates, drawn entirely with CSS. Keep the native card node,
@@ -143,22 +213,34 @@
     transition: none;
 }
 
+.rpp-enabled #user_avatar_block:not(.gridView) > .avatar-container > .avatar {
+    position: relative;
+}
+
+.rpp-enabled #user_avatar_block:not(.gridView) .rpp-banner-image {
+    position: absolute;
+    inset: 0;
+    box-shadow: none;
+    filter: none;
+}
+
+.rpp-enabled #user_avatar_block.gridView .rpp-banner-image {
+    display: none;
+}
+
 .rpp-enabled #user_avatar_block > .avatar-container:focus-visible {
     outline: 2px solid var(--customThemeColor, var(--SmartThemeQuoteColor));
     outline-offset: 2px;
-}
-
-.rpp-current-heading {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin: 8px 0 14px;
 }
 
 .rpp-current-heading > h4 {
     flex: 1;
     margin: 0;
     min-width: 0;
+    min-height: 34px;
+    padding: 0;
+    line-height: 24px;
+    font-size: 1.04rem;
 }
 
 .rpp-view-toggle {
@@ -237,6 +319,10 @@
     text-underline-offset: 3px;
 }
 
+.rpp-enabled #persona_controls .rpp-action-icon {
+    display: none;
+}
+
 .rpp-current-media {
     position: relative;
     min-width: 0;
@@ -285,21 +371,54 @@
 }
 
 .rpp-banner-header .persona_controls_buttons_block {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 3px 16px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 6px;
+}
+
+.rpp-banner-header #persona_controls .rpp-text-action {
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 4px;
+    border: 1px solid var(--rpp-line);
+    border-radius: 8px;
+}
+
+.rpp-banner-header #persona_controls .rpp-action-label {
+    display: none;
+}
+
+.rpp-banner-header #persona_controls .rpp-action-icon {
+    display: block;
+}
+
+.rpp-banner-header #persona_controls .rpp-text-action:hover,
+.rpp-banner-header #persona_controls .rpp-text-action:focus-visible {
+    border-color: currentColor;
 }
 
 .rpp-settings {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 14px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
     align-items: start;
+    justify-content: center;
     margin: 10px 0 14px;
 }
 
 .rpp-position {
-    min-width: 0;
+    display: contents;
+}
+
+.rpp-position-meta {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-content: center;
+    align-items: baseline;
+    gap: 14px;
+    margin-top: 0;
 }
 
 .rpp-position h4,
@@ -313,15 +432,18 @@
     min-width: 0;
     margin: 0;
     font-size: .78em;
+    height: 32px;
 }
 
 .rpp-position #persona_depth_position_settings {
-    margin-top: 6px;
+    grid-column: 1 / -1;
+    grid-row: 3;
+    margin-top: 0;
     font-size: .82em;
 }
 
 #rpp-connections > summary {
-    margin: 0 0 0 auto;
+    margin: 0 auto;
 }
 
 #rpp-connections .menu_button,
@@ -347,6 +469,36 @@
     margin-bottom: 8px;
 }
 
+/* Open settings menus span the row while all three controls keep their places. */
+.rpp-settings > .rpp-dropdown-content {
+    grid-column: 1 / -1;
+    min-width: 0;
+    padding-top: 0;
+}
+
+#rpp-connections {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.rpp-position #persona_description_position {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+#rpp-global-settings {
+    grid-column: 3;
+    grid-row: 1;
+}
+
+.rpp-settings > .rpp-dropdown > summary {
+    justify-content: center;
+    min-height: 32px;
+    padding: 6px 8px;
+    gap: 8px;
+    font-size: .78em;
+}
+
 @media (max-width: 700px) {
     .rpp-enabled #persona-management-block {
         flex-direction: column;
@@ -354,6 +506,14 @@
 
     .rpp-enabled .persona_management_right_column {
         padding-left: 0;
+        border-left: 0;
+        border-top: 1px solid var(--rpp-line);
+        margin-top: 14px;
+        padding-top: 14px;
+    }
+
+    .rpp-enabled .persona_management_left_column {
+        padding-right: 0;
     }
 
     .rpp-current-hero {
@@ -365,10 +525,12 @@
     }
 
     .rpp-settings {
-        grid-template-columns: minmax(0, 1fr);
+        gap: 6px;
     }
 
-    #rpp-connections > summary {
-        margin: 0;
+    .rpp-settings > .rpp-dropdown > summary {
+        padding: 6px;
+        gap: 6px;
+        font-size: .7em;
     }
 }

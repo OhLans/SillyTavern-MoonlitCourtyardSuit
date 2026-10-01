@@ -39,12 +39,24 @@ relative to `features/icons/style.css`.
   feature changes require a reload. Page disposal runs on `pagehide`, not
   `beforeunload`, so cancelling an unsaved-changes prompt cannot dismantle the UI.
 
-## Persona Panels (1.1.0)
+## Persona Panels (1.1.1)
 
 The native `persona_grid_toggle` and `user_avatar_block.gridView` still own the
 list view and its preference. Banner styling applies only outside `gridView`;
 the circular grid is not restyled. The independent current-persona view is saved
 as `extensionSettings.moonlitCourtyardSuit.personaHeaderView`.
+
+The native list heading is moved into the left column to align with Current
+Persona. Actions contains the original create/backup/restore/usage nodes,
+search, sort and pagination. Current-persona actions remain native nodes;
+their text and passive SVG children are shown according to the header view.
+Do not attach handlers to those SVG children.
+
+List banners use separate lazy-loaded full-size images, added only when banner
+mode is first displayed. The native thumbnail nodes and sources stay untouched.
+The added images live in a WeakMap, outside the generated-node/listener sets,
+so paginated cards can be collected. Native upload completion refreshes an
+existing matching banner without changing the native upload/crop flow.
 
 Both portrait and banner use the existing persona image; there is no second
 image store or upload endpoint. The feature reads SillyTavern's live
@@ -58,13 +70,24 @@ nodes. The explicit lorebook link dispatches the existing dropdown's change
 event; extra dropdown options from other extensions remain accessible. Original
 inputs, confirmations, upload/crop flow and editor maximize stay with SillyTavern.
 Dropdowns use independent native `details` elements and stay open until toggled.
+Connections and Global Settings content sits beside its details element in the
+settings grid; a native `toggle` event controls visibility. This lets each open
+menu span the column without relying on browser-specific details content boxes.
+The original Position select, depth controls and label/token row stay together
+in their native container; CSS places them on centered grid rows.
 
 Chromium checks used SillyTavern markup and Moonlit CSS with simulated native
 handlers. They covered original-node identity and action routing, both layouts,
 native circular-grid geometry, filtering out the selected persona, persisted
 header preference, input/depth/settings controls, late additional actions,
 mobile overflow, cleanup and zero hero mutations from 50 unchanged persona
-updates. Existing Navigator/Character Panels DOM regressions also passed.
+updates. The 1.1.1 checks additionally covered heading alignment, the divider,
+centered manager controls/search/pagination, native action order, keyboard
+activation with SillyTavern's real keyboard module, text/icon view switching,
+full-resolution list images with original thumbnails retained, full-width
+independent settings menus, and the mobile settings row. Starting in circular
+grid mode creates no extra full-size list images. Existing Navigator/Character
+Panels DOM regressions also passed.
 These are fixture checks, not an end-to-end test of a live SillyTavern server or
 an FPS benchmark on the user's computer.
 

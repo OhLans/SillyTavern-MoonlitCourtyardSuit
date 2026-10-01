@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.1.1 — 2026-10-01
+
+- Centered Actions above the persona list, with icon-only create, backup,
+  restore and usage controls, search, sorting and pagination inside its menu.
+- Aligned Current Persona with the manager heading and added a thin vertical
+  divider between the desktop columns; mobile keeps the stacked layout.
+- Ordered current-persona actions as Rename, Change Image, Persona Lore,
+  Link Lorebook, Set for All Messages, Duplicate and Delete. The portrait
+  layout retains text; only the current-persona banner uses icons.
+- Centered Connections, the native Position select and Global Settings on one
+  row, with the Position label and token counter below. Open settings menus
+  span the full column and keep their independent toggle behavior.
+- Fixed blurry list banners by using lazy-loaded full-size persona images.
+  Native circular-grid thumbnails and geometry stay intact. Images are added
+  only for banner mode and held weakly so pagination can discard old pages.
+- Preserved native controls, keyboard activation, upload completion, saved
+  layout choices and cleanup. No new observers or background polling.
+
 ## 1.1.0 — 2026-10-01
 
 - Added a separate Persona Panels feature, controlled by `personaPanels` in

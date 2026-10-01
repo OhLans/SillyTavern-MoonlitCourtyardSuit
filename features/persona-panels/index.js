@@ -7,6 +7,7 @@ const moved = new Map();
 const attributes = new Map();
 const cardAttributes = new WeakMap();
 const avatarTitles = new WeakMap();
+const bannerImages = new WeakMap();
 const addedClasses = new Map();
 const generated = new Set();
 const listeners = [];
@@ -18,7 +19,32 @@ let selectedId = '';
 let view = 'portrait';
 let loadedPreference = false;
 let reloadImage = false;
-let pendingImageReload = false;
+let pendingImageReload = '';
+
+const iconPaths = {
+    create: '<path d="M12 4v16M4 12h16"/>',
+    backup: '<path d="M12 16V3m-4 4 4-4 4 4M4 14v6h16v-6"/>',
+    restore: '<path d="M12 3v13m-4-4 4 4 4-4M4 14v6h16v-6"/>',
+    stats: '<path d="M4 20h16M6 16V9m6 7V4m6 12v-5"/>',
+    rename: '<path d="m4 16-1 5 5-1L20 8a2.8 2.8 0 0 0-4-4L4 16Zm10-10 4 4"/>',
+    image: '<rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.5"/><path d="m3 17 5-5 4 4 4-6 5 7"/>',
+    lore: '<circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18"/>',
+    link: '<path d="m10 14 4-4m-5-1 2-2a4.2 4.2 0 0 1 6 6l-2 2m-6-6-2 2a4.2 4.2 0 0 0 6 6l2-2"/>',
+    sync: '<path d="M20 10a8 8 0 0 0-14-5L3 8m0-5v5h5M4 14a8 8 0 0 0 14 5l3-3m-5 0h5v5"/>',
+    duplicate: '<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/>',
+    delete: '<path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7"/>',
+};
+
+function icon(name) {
+    const node = make('span', 'rpp-action-icon');
+    node.setAttribute('aria-hidden', 'true');
+    node.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${iconPaths[name]}</svg>`;
+    return node;
+}
+
+function personaImageUrl(id) {
+    return id ? new URL(`User Avatars/${encodeURIComponent(id)}`, document.baseURI).href : '';
+}
 
 function make(tag, className = '', text = '') {
     const node = document.createElement(tag);
@@ -73,6 +99,17 @@ function dropdown(id, label) {
     return { details, content };
 }
 
+function settingsDropdown(menu, settings) {
+    // Keep each native details/summary toggle intact, but place its content
+    // across the settings row. This avoids browser-specific details wrappers
+    // squeezing open menus into one third of the panel.
+    menu.content.hidden = true;
+    menu.content.setAttribute('role', 'group');
+    menu.content.setAttribute('aria-label', $('summary', menu.details).textContent);
+    settings.append(menu.details, menu.content);
+    listen(menu.details, 'toggle', () => setHidden(menu.content, !menu.details.open));
+}
+
 function gridButton() {
     const button = make('button', 'menu_button rpp-view-toggle');
     button.type = 'button';
@@ -117,6 +154,32 @@ function syncListToggle() {
     attribute(toggle, 'title', title);
     attribute(toggle, 'aria-label', title);
     attribute(toggle, 'aria-pressed', String(circles));
+    if (!circles) for (const card of list.children) syncBannerImage(card);
+}
+
+function syncBannerImage(card, reload = false) {
+    const avatar = $('.avatar', card);
+    const url = personaImageUrl(card.dataset.avatarId);
+    if (!card.matches('.avatar-container') || !avatar || !url) return;
+    let img = bannerImages.get(card);
+    if (!img) {
+        // Keep native thumbnails untouched for the circular grid. These images
+        // are weakly held so native pagination can discard them with each card.
+        img = document.createElement('img');
+        img.className = 'rpp-banner-image';
+        img.alt = '';
+        img.setAttribute('aria-hidden', 'true');
+        img.loading = 'lazy';
+        img.decoding = 'async';
+        img.draggable = false;
+        img.addEventListener('error', () => { img.hidden = true; });
+        avatar.append(img);
+        bannerImages.set(card, img);
+    }
+    if (reload || img.getAttribute('src') !== url) {
+        img.hidden = false;
+        img.src = url;
+    }
 }
 
 function decorateCard(card) {
@@ -135,6 +198,7 @@ function decorateCard(card) {
         if (!avatarTitles.has(avatar)) avatarTitles.set(avatar, avatar.getAttribute('title'));
         setAttribute(avatar, 'title', name);
     }
+    if (!card.parentElement.classList.contains('gridView')) syncBannerImage(card);
 }
 
 function syncMoreOptions() {
@@ -156,7 +220,7 @@ function syncHero() {
     const card = nativePersonas ? null : $('#user_avatar_block .avatar-container.selected', panel);
     const id = nativePersonas ? nativePersonas.user_avatar : selectedId || card?.dataset.avatarId || '';
     const name = $('#your_name', panel)?.textContent?.trim() || getContext()?.name1 || 'Current persona';
-    const url = id ? new URL(`User Avatars/${encodeURIComponent(id)}`, document.baseURI).href : '';
+    const url = personaImageUrl(id);
     for (const img of panel.querySelectorAll('.rpp-persona-image')) {
         setAttribute(img, 'alt', name);
         if (url && (reloadImage || img.getAttribute('src') !== url)) {
@@ -179,14 +243,34 @@ function build() {
     mark(panel, 'rpp-enabled');
 
     const left = $('.persona_management_left_column', panel);
+    const nativeHeading = $('#persona-management-block', panel)?.previousElementSibling;
     const nativeTools = $('#persona_search_bar', panel)?.parentElement;
     const tools = make('div', 'rpp-list-tools');
     tools.id = 'rpp-list-tools';
     left.prepend(tools);
+    if (nativeHeading) {
+        mark(nativeHeading, 'rpp-manager-heading');
+        move(nativeHeading, left);
+        left.prepend(nativeHeading);
+    }
     const actions = dropdown('rpp-actions', 'Actions');
     tools.append(actions.details);
-    for (const selector of ['#create_dummy_persona', '#personas_backup', '#personas_restore', '.user_stats_button']) {
-        move($(selector, panel), actions.content);
+    const actionButtons = make('div', 'rpp-manager-actions');
+    actions.content.append(actionButtons);
+    for (const [selector, glyph, label] of [
+        ['#create_dummy_persona', 'create', 'Create persona'],
+        ['#personas_backup', 'backup', 'Backup personas'],
+        ['#personas_restore', 'restore', 'Restore personas'],
+        ['.user_stats_button', 'stats', 'Usage stats'],
+    ]) {
+        const button = $(selector, panel);
+        if (!button) continue;
+        move(button, actionButtons);
+        mark(button, 'rpp-icon-action');
+        attribute(button, 'role', 'button');
+        attribute(button, 'tabindex', '0');
+        attribute(button, 'aria-label', label);
+        button.append(icon(glyph));
     }
     const listToggle = $('#persona_grid_toggle', panel);
     if (listToggle) {
@@ -197,8 +281,9 @@ function build() {
     }
     if (nativeTools) {
         mark(nativeTools, 'rpp-search-tools');
+        move(nativeTools, actions.content);
         const pagination = make('div', 'rpp-pagination');
-        nativeTools.after(pagination);
+        actions.content.append(pagination);
         move($('#persona_pagination_container', panel), pagination);
     }
 
@@ -221,26 +306,33 @@ function build() {
     move($('#persona_controls', panel), hero);
     hero.append(media);
 
-    const labels = {
-        persona_rename_button: 'Rename persona',
-        sync_name_button: 'Set persona for all messages',
-        persona_lore_button: 'Persona lore',
-        persona_set_image_button: 'Change persona image',
-        persona_duplicate_button: 'Duplicate persona',
-        persona_delete_button: 'Delete persona',
-    };
-    for (const [id, text] of Object.entries(labels)) {
+    const labels = [
+        ['persona_rename_button', 'Rename Persona', 'rename'],
+        ['persona_set_image_button', 'Change Persona Image', 'image'],
+        ['persona_lore_button', 'Persona Lore', 'lore'],
+        ['rpp-link-lorebook', 'Link to persona lorebook', 'link'],
+        ['sync_name_button', 'Set persona to all messages', 'sync'],
+        ['persona_duplicate_button', 'Duplicate persona', 'duplicate'],
+        ['persona_delete_button', 'Delete persona', 'delete'],
+    ];
+    const actionBlock = $('.persona_controls_buttons_block', panel);
+    const link = make('button', 'menu_button');
+    link.id = 'rpp-link-lorebook';
+    link.type = 'button';
+    link.title = 'Link to persona lorebook';
+    actionBlock?.append(link);
+    for (const [id, text, glyph] of labels) {
         const button = $(`#${id}`, panel);
         if (!button) continue;
+        if (button !== link) move(button, actionBlock);
+        actionBlock?.append(button);
         mark(button, 'rpp-text-action');
         attribute(button, 'role', 'button');
         attribute(button, 'tabindex', '0');
+        attribute(button, 'aria-label', text);
+        button.append(icon(glyph));
         button.append(make('span', 'rpp-action-label', text));
     }
-    const link = make('button', 'menu_button rpp-text-action', 'Link to persona lorebook');
-    link.id = 'rpp-link-lorebook';
-    link.type = 'button';
-    $('.persona_controls_buttons_block', panel)?.append(link);
     listen(link, 'click', () => {
         const select = $('#persona-management-dropdown', panel);
         const index = [...(select?.options || [])].findIndex(option => option.id === 'persona_lorebook_link');
@@ -254,12 +346,17 @@ function build() {
     const connectionsHeading = position?.nextElementSibling;
     const settings = make('div', 'rpp-settings');
     positionHeading?.before(settings);
-    const positionSlot = make('div', 'rpp-position');
-    settings.append(positionSlot);
-    move(positionHeading, positionSlot);
-    move(position, positionSlot);
     const connections = dropdown('rpp-connections', 'Connections');
-    settings.append(connections.details);
+    settingsDropdown(connections, settings);
+    // Use the original Position select as the middle control. Its small label
+    // and token counter sit below the controls; depth/role remain underneath.
+    mark(position, 'rpp-position');
+    move(position, settings);
+    if (positionHeading) {
+        mark(positionHeading, 'rpp-position-meta');
+        move(positionHeading, position);
+        $('#persona_depth_position_settings', position)?.before(positionHeading);
+    }
     if (connectionsHeading?.matches('h4')) attribute(connectionsHeading, 'hidden', '');
     for (const id of ['persona_connections_buttons', 'persona_connections_info_block', 'persona_connections_list']) {
         move($(`#${id}`, panel), connections.content);
@@ -269,13 +366,13 @@ function build() {
         const globalHeading = $('h4', global);
         if (globalHeading) attribute(globalHeading, 'hidden', '');
         const globalSettings = dropdown('rpp-global-settings', 'Global Settings');
-        $('.persona_management_right_column', panel).append(globalSettings.details);
+        settingsDropdown(globalSettings, settings);
         move(global, globalSettings.content);
     }
 
     listen(panel, 'keydown', event => {
         if (!['Enter', ' '].includes(event.key) || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
-        const target = event.target.closest('.rpp-text-action, #rpp-current-view-toggle, #persona_grid_toggle, #user_avatar_block .avatar-container');
+        const target = event.target.closest('.rpp-text-action, .rpp-icon-action, #rpp-current-view-toggle, #persona_grid_toggle, #user_avatar_block .avatar-container');
         if (!target || event.target !== target) return;
         // ST's global keyboard handler also clicks .menu_button elements.
         // Own this one activation to avoid that click plus the button default.
@@ -285,14 +382,17 @@ function build() {
     });
     const upload = $('#avatar_upload_file', panel);
     if (upload) listen(upload, 'change', () => {
-        pendingImageReload = Boolean($('#avatar_upload_overwrite', panel)?.value && upload.files?.length);
+        pendingImageReload = upload.files?.length ? $('#avatar_upload_overwrite', panel)?.value || '' : '';
     });
     const uploadForm = $('#form_upload_avatar', panel);
     if (uploadForm) listen(uploadForm, 'reset', () => {
         // Native upload/crop finishes by resetting this form. Waiting for that
         // event avoids consuming the refresh while its async crop is still open.
         if (!pendingImageReload) return;
-        pendingImageReload = false;
+        for (const card of list.children) {
+            if (card.dataset.avatarId === pendingImageReload && bannerImages.has(card)) syncBannerImage(card, true);
+        }
+        pendingImageReload = '';
         reloadImage = true;
         scheduleHero();
     });
@@ -362,6 +462,7 @@ export function cleanup() {
             else card.setAttribute(name, value);
         }
         const avatar = $('.avatar', card);
+        bannerImages.get(card)?.remove();
         if (avatar && avatarTitles.has(avatar)) {
             const title = avatarTitles.get(avatar);
             if (title === null) avatar.removeAttribute('title');
