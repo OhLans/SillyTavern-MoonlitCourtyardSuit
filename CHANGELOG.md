@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.1.5 — 2026-10-02
+
+- Matched the reference's portrait composition: the description heading and
+  native editor sit inside a thin rounded frame, aligned with the photo's full
+  top and bottom edges. Kept the portrait's original share of the column width
+  and added more space between the two cards.
+- Used the same description frame in banner view. The shared card minimum
+  follows normal portrait proportions, with a 280px floor for writing room.
+  The photo no longer grows merely to fill the banner layout's extra space.
+- Reserved that extra space below the portrait controls to keep the overall
+  window size consistent. Manual resize and maximize remain native; removed
+  the inline-height conversion code. No new observers or layout measurements.
+
 ## 1.1.4 — 2026-10-02
 
 - Aligned the portrait's top and bottom edges with the native description field

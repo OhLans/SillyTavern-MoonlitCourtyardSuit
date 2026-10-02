@@ -39,7 +39,7 @@ relative to `features/icons/style.css`.
   feature changes require a reload. Page disposal runs on `pagehide`, not
   `beforeunload`, so cancelling an unsaved-changes prompt cannot dismantle the UI.
 
-## Persona Panels (1.1.4)
+## Persona Panels (1.1.5)
 
 The native `persona_grid_toggle` and `user_avatar_block.gridView` still own the
 list view and its preference. Banner styling applies only outside `gridView`;
@@ -58,20 +58,24 @@ inside the original `persona_controls`. That wrapper uses `display: contents`
 so CSS can place the editor beside the portrait or below the banner, with the
 same centered action row underneath. View changes do not move native nodes.
 Disposal restores the editor and list grid button to their original positions.
-The description wrapper uses row/column subgrids. Its full-width heading sits
-above the editor; in portrait view, the editor and photo occupy the same parent
-row so both edges align. Name and heading wrap at the same width in either view.
-The right column supplies an inline-size container. `--rpp-image-reserve` uses
-its width to account for the banner's 2.6 aspect ratio, 28px avatar overlap and
-one 12px row gap. Portrait adds that reserve to its editor height, matching the
-banner view's total height without measuring layout. Banner's editor minimum
-is 260px. Keep the reserve in step with the aspect ratio, overlap and row gap.
+The description wrapper is a rounded, lightly tinted grid card with its native
+heading/maximize inside. In portrait view, the entire card shares a row with the
+photo so their outer edges align. The name stays above both cards. Long heading
+labels use ellipsis while retaining their complete native accessible text.
 
-Native resize and maximize remain available. On a deliberate view switch,
-`syncEditorHeight` reads only the textarea's inline height/priority and converts
-any manually assigned height using the same CSS reserve. It retains the native
-authored value for cleanup, does not accumulate expressions over repeated
-switches, and adds no observers or computed-style/layout reads.
+The right column supplies an inline-size container. The photo retains 38.5% of
+that width, with a wider responsive gutter. Both description cards share
+`--rpp-card-height: max(280px, 57.75cqi)` (the portrait width at a 2:3 aspect).
+The native textarea has a 220px minimum and grows within that card. It keeps its
+native resize/maximize behavior, without modifying its inline height.
+
+Portrait reserves the banner's extra image row below the controls through CSS
+padding: column width / 2.6 + 28px avatar overlap + one 12px row gap. This keeps
+the window height consistent without stretching the photo to fill that space.
+The current-persona block uses `flow-root` so native end margins stay inside
+the block in both layouts rather than collapsing only in banner view.
+Keep the padding in step with banner aspect ratio, overlap and row gap. Card
+sizing and view switches need no observers or computed-style/layout reads.
 
 List banners use separate lazy-loaded full-size images, added only when banner
 mode is first displayed. The native thumbnail nodes and sources stay untouched.
