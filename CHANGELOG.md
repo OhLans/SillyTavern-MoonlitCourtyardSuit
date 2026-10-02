@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.1.2 — 2026-10-02
+
+- Moved the native persona-list grid button into the manager heading, aligned
+  with the independent Current Persona layout button.
+- Placed the native description editor beside the portrait and used centered
+  action icons below it. Banner mode places the editor below the banner with
+  the same centered icon row. Native maximize and action handlers remain intact.
+- Centered Connections controls/messages and the Global Settings option group.
+  Each menu still stays open until its own button is toggled.
+- Reduced the search/sort/pagination area to a compact centered menu, including
+  smaller paging controls; retained native inputs and paging behavior.
+- Fixed banners staying blurry after native pagination renders twice quickly.
+  The list observer now skips already removed cards and deduplicates the live
+  additions, so new pages receive their full-size images without a grid toggle.
+  Kept native circular thumbnails, lazy image loading and the existing observer
+  scope; no new observers, polling or runtime layout measurements.
+
 ## 1.1.1 — 2026-10-01
 
 - Centered Actions above the persona list, with icon-only create, backup,

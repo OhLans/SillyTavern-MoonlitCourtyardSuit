@@ -183,7 +183,9 @@ function syncBannerImage(card, reload = false) {
 }
 
 function decorateCard(card) {
-    if (!card.matches('.avatar-container')) return;
+    // Native pagination may render a page and immediately navigate to another.
+    // Its earlier added-node records then refer to cards already removed.
+    if (!card.matches('.avatar-container') || card.parentElement?.id !== 'user_avatar_block') return;
     const name = $('.ch_name', card)?.textContent?.trim() || card.dataset.avatarId || 'Persona';
     if (!cardAttributes.has(card)) {
         cardAttributes.set(card, new Map(['title', 'aria-label', 'role', 'tabindex'].map(key => [key, card.getAttribute(key)])));
@@ -274,7 +276,8 @@ function build() {
     }
     const listToggle = $('#persona_grid_toggle', panel);
     if (listToggle) {
-        move(listToggle, tools);
+        move(listToggle, nativeHeading || tools);
+        mark(listToggle, 'rpp-view-toggle');
         attribute(listToggle, 'role', 'button');
         attribute(listToggle, 'tabindex', '0');
         attribute(listToggle, 'aria-controls', 'user_avatar_block');
@@ -306,6 +309,14 @@ function build() {
     move($('#persona_controls', panel), hero);
     hero.append(media);
 
+    const description = $('#persona_description', panel);
+    const descriptionHeading = description?.previousElementSibling;
+    const descriptionSlot = make('div', 'rpp-description');
+    const actionBlock = $('.persona_controls_buttons_block', panel);
+    actionBlock?.before(descriptionSlot);
+    move(descriptionHeading, descriptionSlot);
+    move(description, descriptionSlot);
+
     const labels = [
         ['persona_rename_button', 'Rename Persona', 'rename'],
         ['persona_set_image_button', 'Change Persona Image', 'image'],
@@ -315,7 +326,6 @@ function build() {
         ['persona_duplicate_button', 'Duplicate persona', 'duplicate'],
         ['persona_delete_button', 'Delete persona', 'delete'],
     ];
-    const actionBlock = $('.persona_controls_buttons_block', panel);
     const link = make('button', 'menu_button');
     link.id = 'rpp-link-lorebook';
     link.type = 'button';
@@ -399,9 +409,11 @@ function build() {
 
     for (const card of list.children) decorateCard(card);
     observers.observe('list', list, { childList: true }, records => {
+        const added = new Set();
         for (const record of records) for (const node of record.addedNodes) {
-            if (node.nodeType === 1) decorateCard(node);
+            if (node.nodeType === 1 && node.parentNode === list) added.add(node);
         }
+        added.forEach(decorateCard);
         scheduleHero();
     });
     observers.observe('grid', list, { attributes: true, attributeFilter: ['class'] }, syncListToggle);

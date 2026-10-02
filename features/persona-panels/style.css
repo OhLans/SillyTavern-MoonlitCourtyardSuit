@@ -57,10 +57,7 @@
     margin: 0 auto;
 }
 
-.rpp-list-tools #persona_grid_toggle {
-    position: absolute;
-    right: 0;
-    top: 0;
+.rpp-manager-heading #persona_grid_toggle {
     margin: 0;
 }
 
@@ -141,6 +138,55 @@
     flex-wrap: wrap;
     gap: 6px;
     justify-content: center;
+    width: min(100%, 248px);
+    margin: 0 auto;
+    font-size: .8em;
+}
+
+#rpp-actions-content .rpp-search-tools {
+    gap: 4px;
+}
+
+#rpp-actions-content .rpp-search-tools input,
+#rpp-actions-content .rpp-search-tools select,
+#rpp-actions-content .rpp-pagination select {
+    min-height: 26px;
+    height: 26px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    font-size: 1em;
+}
+
+#rpp-actions-content .paginationjs {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+#rpp-actions-content .paginationjs-nav {
+    font-size: 1em;
+    padding: 0;
+}
+
+#rpp-actions-content .paginationjs-pages ul {
+    gap: 3px;
+    margin: 0;
+}
+
+#rpp-actions-content .paginationjs-pages ul li a,
+#rpp-actions-content .rpp-pagination .menu_button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    min-height: 24px;
+    padding: 3px 5px;
+    margin: 0;
+    line-height: 1.2;
+}
+
+#rpp-actions-content .paginationjs-size-changer select {
+    margin: 0;
 }
 
 .rpp-manager-actions {
@@ -267,36 +313,64 @@
 }
 
 .rpp-enabled #persona_controls {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-    min-width: 0;
+    display: contents;
 }
 
 .rpp-enabled #persona_controls .persona_name {
-    margin: 0 0 4px;
+    grid-column: 1;
+    grid-row: 1;
+    margin: 0;
     overflow-wrap: anywhere;
     white-space: normal;
 }
 
-.rpp-enabled .persona_controls_buttons_block {
+.rpp-description {
     display: flex;
     flex-direction: column;
-    align-items: stretch;
-    gap: 3px;
+    gap: 6px;
+    grid-column: 1;
+    grid-row: 2;
+    min-width: 0;
+}
+
+.rpp-description > h4 {
+    margin: 0;
+    font-size: .86em;
+}
+
+.rpp-description #persona_description {
+    width: 100%;
+    min-height: 180px;
+    margin: 0;
+    flex: 1;
+}
+
+.rpp-enabled #persona_controls > label {
+    grid-column: 1 / -1;
+    grid-row: 4;
+    min-width: 0;
+}
+
+.rpp-enabled .persona_controls_buttons_block {
+    display: flex;
+    grid-column: 1 / -1;
+    grid-row: 3;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
 }
 
 .rpp-enabled #persona_controls .rpp-text-action {
     display: flex;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: center;
-    width: 100%;
-    height: auto;
-    min-height: 28px;
+    width: 32px;
+    height: 32px;
     margin: 0;
-    padding: 4px 0;
-    border: 0;
+    padding: 4px;
+    border: 1px solid var(--rpp-line);
+    border-radius: 8px;
     background: transparent !important;
     box-shadow: none;
     font-family: inherit !important;
@@ -315,16 +389,17 @@
 
 .rpp-enabled #persona_controls .rpp-text-action:hover,
 .rpp-enabled #persona_controls .rpp-text-action:focus-visible {
-    text-decoration: underline;
-    text-underline-offset: 3px;
+    border-color: currentColor;
 }
 
-.rpp-enabled #persona_controls .rpp-action-icon {
+.rpp-enabled #persona_controls .rpp-action-label {
     display: none;
 }
 
 .rpp-current-media {
     position: relative;
+    grid-column: 2;
+    grid-row: 1 / span 2;
     min-width: 0;
     min-height: 210px;
     border-radius: var(--rpp-radius);
@@ -347,14 +422,14 @@
 
 .rpp-banner-header .rpp-current-hero {
     grid-template-columns: minmax(0, 1fr);
-    gap: 0;
 }
 
 .rpp-banner-header .rpp-current-media {
+    grid-column: 1;
     grid-row: 1;
     min-height: 0;
     aspect-ratio: 2.6;
-    margin-bottom: 42px;
+    margin-bottom: 28px;
 }
 
 .rpp-banner-header .rpp-current-avatar {
@@ -370,33 +445,20 @@
     object-position: center 25%;
 }
 
+.rpp-banner-header #persona_controls .persona_name {
+    grid-row: 2;
+}
+
+.rpp-banner-header .rpp-description {
+    grid-row: 3;
+}
+
 .rpp-banner-header .persona_controls_buttons_block {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    gap: 6px;
+    grid-row: 4;
 }
 
-.rpp-banner-header #persona_controls .rpp-text-action {
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    padding: 4px;
-    border: 1px solid var(--rpp-line);
-    border-radius: 8px;
-}
-
-.rpp-banner-header #persona_controls .rpp-action-label {
-    display: none;
-}
-
-.rpp-banner-header #persona_controls .rpp-action-icon {
-    display: block;
-}
-
-.rpp-banner-header #persona_controls .rpp-text-action:hover,
-.rpp-banner-header #persona_controls .rpp-text-action:focus-visible {
-    border-color: currentColor;
+.rpp-banner-header #persona_controls > label {
+    grid-row: 5;
 }
 
 .rpp-settings {
@@ -452,21 +514,35 @@
     font-size: .86em;
 }
 
-#rpp-connections #persona_connections_buttons {
+#rpp-connections-content #persona_connections_buttons {
     gap: 6px;
+    justify-content: center;
 }
 
-#rpp-connections #persona_connections_list {
+#rpp-connections-content #persona_connections_info_block {
+    text-align: center;
+}
+
+#rpp-connections-content #persona_connections_list {
     max-height: 200px;
     overflow-y: auto;
+    justify-content: center;
+    text-align: center;
 }
 
 #rpp-global-settings > summary {
     margin: 0 auto;
 }
 
-#rpp-global-settings .range-block {
+#rpp-global-settings-content .persona_management_global_settings {
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+#rpp-global-settings-content .range-block {
     margin-bottom: 8px;
+    justify-content: flex-start;
 }
 
 /* Open settings menus span the row while all three controls keep their places. */

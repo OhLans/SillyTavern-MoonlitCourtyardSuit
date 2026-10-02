@@ -39,7 +39,7 @@ relative to `features/icons/style.css`.
   feature changes require a reload. Page disposal runs on `pagehide`, not
   `beforeunload`, so cancelling an unsaved-changes prompt cannot dismantle the UI.
 
-## Persona Panels (1.1.1)
+## Persona Panels (1.1.2)
 
 The native `persona_grid_toggle` and `user_avatar_block.gridView` still own the
 list view and its preference. Banner styling applies only outside `gridView`;
@@ -48,15 +48,29 @@ as `extensionSettings.moonlitCourtyardSuit.personaHeaderView`.
 
 The native list heading is moved into the left column to align with Current
 Persona. Actions contains the original create/backup/restore/usage nodes,
-search, sort and pagination. Current-persona actions remain native nodes;
-their text and passive SVG children are shown according to the header view.
-Do not attach handlers to those SVG children.
+search, sort and pagination. The list grid button sits in the manager heading.
+Current-persona actions remain native nodes with passive SVG children; their
+labels are hidden visually and retained as accessible names. Do not attach
+handlers to those SVG children.
+
+The native description heading/maximize and textarea sit in `.rpp-description`
+inside the original `persona_controls`. That wrapper uses `display: contents`
+so CSS can place the editor beside the portrait or below the banner, with the
+same centered action row underneath. View changes do not move native nodes.
+Disposal restores the editor and list grid button to their original positions.
 
 List banners use separate lazy-loaded full-size images, added only when banner
 mode is first displayed. The native thumbnail nodes and sources stay untouched.
 The added images live in a WeakMap, outside the generated-node/listener sets,
 so paginated cards can be collected. Native upload completion refreshes an
 existing matching banner without changing the native upload/crop flow.
+
+Native pagination may render a page and immediately navigate to another in the
+same turn. Mutation records can therefore include already removed cards. The
+list observer processes each added node once and only if it is still a direct
+child of the native list; `decorateCard` also guards against detached cards.
+Do not process stale added nodes: that previously interrupted image setup and
+left only the enlarged thumbnail until the user toggled the grid.
 
 Both portrait and banner use the existing persona image; there is no second
 image store or upload endpoint. The feature reads SillyTavern's live
@@ -65,7 +79,7 @@ selected card cannot change the header. Native persona events and a small list
 child observer keep it current. There is no observer of the persona subtree's
 attributes, no polling and no computed-style lookup in this module.
 
-Keep native controls and their IDs intact. The text actions are their original
+Keep native controls and their IDs intact. The action buttons are their original
 nodes. The explicit lorebook link dispatches the existing dropdown's change
 event; extra dropdown options from other extensions remain accessible. Original
 inputs, confirmations, upload/crop flow and editor maximize stay with SillyTavern.
@@ -88,6 +102,12 @@ full-resolution list images with original thumbnails retained, full-width
 independent settings menus, and the mobile settings row. Starting in circular
 grid mode creates no extra full-size list images. Existing Navigator/Character
 Panels DOM regressions also passed.
+The 1.1.2 fixture additionally reproduced the detached-card error before the
+fix and verified two rapid page renders and paging-button clicks produce full-
+size banners with no grid toggle or error. Checks cover aligned grid buttons,
+description/editor-maximize placement, centered icon rows and settings option
+groups, compact search with four paging arrows, both mobile header layouts,
+and restoration of the native editor/grid-button positions during disposal.
 These are fixture checks, not an end-to-end test of a live SillyTavern server or
 an FPS benchmark on the user's computer.
 
