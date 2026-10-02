@@ -25,6 +25,7 @@
 .rpp-enabled .persona_management_right_column {
     padding-left: 16px;
     border-left: 1px solid var(--rpp-line);
+    container-type: inline-size;
 }
 
 .rpp-manager-heading,
@@ -305,6 +306,12 @@
 }
 
 .rpp-current-hero {
+    /* Portrait combines the space occupied by the banner and editor. The
+     * reserve includes the overlapping avatar (28px) and one extra row gap.
+     * cqi follows this column, including in the stacked mobile layout.
+     */
+    --rpp-image-reserve: calc(100cqi / 2.6 + 40px);
+    --rpp-editor-height: calc(260px + var(--rpp-image-reserve));
     display: grid;
     grid-template-columns: minmax(0, 1.3fr) minmax(110px, .85fr);
     gap: 12px;
@@ -317,7 +324,7 @@
 }
 
 .rpp-enabled #persona_controls .persona_name {
-    grid-column: 1;
+    grid-column: 1 / -1;
     grid-row: 1;
     margin: 0;
     overflow-wrap: anywhere;
@@ -325,36 +332,37 @@
 }
 
 .rpp-description {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    grid-column: 1;
-    grid-row: 2;
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-template-rows: subgrid;
+    grid-column: 1 / -1;
+    grid-row: 2 / span 2;
     min-width: 0;
 }
 
 .rpp-description > h4 {
+    grid-column: 1 / -1;
     margin: 0;
     font-size: .86em;
 }
 
 .rpp-description #persona_description {
+    grid-column: 1;
     width: 100%;
-    min-height: 260px;
+    min-height: var(--rpp-editor-height);
     margin: 0;
-    flex: 0 0 auto;
 }
 
 .rpp-enabled #persona_controls > label {
     grid-column: 1 / -1;
-    grid-row: 4;
+    grid-row: 5;
     min-width: 0;
 }
 
 .rpp-enabled .persona_controls_buttons_block {
     display: flex;
     grid-column: 1 / -1;
-    grid-row: 3;
+    grid-row: 4;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
@@ -399,19 +407,11 @@
 .rpp-current-media {
     position: relative;
     grid-column: 2;
-    grid-row: 1 / span 2;
+    grid-row: 3;
     min-width: 0;
-    min-height: 210px;
+    min-height: 260px;
     border-radius: var(--rpp-radius);
     background: var(--customBgColor2, var(--SmartThemeBlurTintColor));
-}
-
-/* Preserve the text-action layout's portrait size independently of the editor.
- * Resizing the native textarea should add writing room without stretching it.
- */
-.rpp-enabled:not(.rpp-banner-header) .rpp-current-media {
-    height: 250px;
-    align-self: start;
 }
 
 .rpp-current-image {
@@ -429,6 +429,7 @@
 }
 
 .rpp-banner-header .rpp-current-hero {
+    --rpp-editor-height: 260px;
     grid-template-columns: minmax(0, 1fr);
 }
 
@@ -458,15 +459,15 @@
 }
 
 .rpp-banner-header .rpp-description {
-    grid-row: 3;
+    grid-row: 3 / span 2;
 }
 
 .rpp-banner-header .persona_controls_buttons_block {
-    grid-row: 4;
+    grid-row: 5;
 }
 
 .rpp-banner-header #persona_controls > label {
-    grid-row: 5;
+    grid-row: 6;
 }
 
 .rpp-settings {

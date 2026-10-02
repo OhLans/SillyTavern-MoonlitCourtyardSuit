@@ -39,7 +39,7 @@ relative to `features/icons/style.css`.
   feature changes require a reload. Page disposal runs on `pagehide`, not
   `beforeunload`, so cancelling an unsaved-changes prompt cannot dismantle the UI.
 
-## Persona Panels (1.1.3)
+## Persona Panels (1.1.4)
 
 The native `persona_grid_toggle` and `user_avatar_block.gridView` still own the
 list view and its preference. Banner styling applies only outside `gridView`;
@@ -58,9 +58,20 @@ inside the original `persona_controls`. That wrapper uses `display: contents`
 so CSS can place the editor beside the portrait or below the banner, with the
 same centered action row underneath. View changes do not move native nodes.
 Disposal restores the editor and list grid button to their original positions.
-The portrait retains its original column width and a separate 250px height;
-it does not stretch when the editor grows. The native textarea has a 260px
-minimum height in either view, with native resize and maximize still available.
+The description wrapper uses row/column subgrids. Its full-width heading sits
+above the editor; in portrait view, the editor and photo occupy the same parent
+row so both edges align. Name and heading wrap at the same width in either view.
+The right column supplies an inline-size container. `--rpp-image-reserve` uses
+its width to account for the banner's 2.6 aspect ratio, 28px avatar overlap and
+one 12px row gap. Portrait adds that reserve to its editor height, matching the
+banner view's total height without measuring layout. Banner's editor minimum
+is 260px. Keep the reserve in step with the aspect ratio, overlap and row gap.
+
+Native resize and maximize remain available. On a deliberate view switch,
+`syncEditorHeight` reads only the textarea's inline height/priority and converts
+any manually assigned height using the same CSS reserve. It retains the native
+authored value for cleanup, does not accumulate expressions over repeated
+switches, and adds no observers or computed-style/layout reads.
 
 List banners use separate lazy-loaded full-size images, added only when banner
 mode is first displayed. The native thumbnail nodes and sources stay untouched.

@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.1.4 — 2026-10-02
+
+- Aligned the portrait's top and bottom edges with the native description field
+  using a shared grid row. The name and description heading remain above them;
+  action icons remain centered underneath.
+- Matched the portrait and banner layouts' total height. Portrait view uses the
+  banner's image/overlap space as additional room for the editor and photo.
+  The size follows the actual column width, including on mobile. Full-width
+  headings preserve the same height when long names or translations wrap.
+- Kept native manual resizing: a view switch converts only its inline height
+  so the overall window stays the same size. Cleanup restores the native height.
+  No additional observers, polling or runtime layout measurements were added.
+
 ## 1.1.3 — 2026-10-02
 
 - Restored the current-persona portrait to the previous text-action layout's

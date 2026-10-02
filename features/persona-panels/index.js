@@ -20,6 +20,7 @@ let view = 'portrait';
 let loadedPreference = false;
 let reloadImage = false;
 let pendingImageReload = '';
+let editorSizing = null;
 
 const iconPaths = {
     create: '<path d="M12 4v16M4 12h16"/>',
@@ -130,6 +131,30 @@ function gridButton() {
     return button;
 }
 
+function syncEditorHeight(banner) {
+    const editor = $('#persona_description', panel);
+    if (!editor) return;
+    // Native dragging writes an inline height. Convert only on a view change;
+    // CSS resolves the banner reserve without any layout/style measurements.
+    const height = editor.style.getPropertyValue('height');
+    const priority = editor.style.getPropertyPriority('height');
+    editorSizing ??= { editor, banner, height, priority, appliedHeight: height, appliedPriority: priority, basis: '' };
+    const size = editorSizing;
+    if (height !== size.appliedHeight || priority !== size.appliedPriority || !size.basis) {
+        size.height = height;
+        size.priority = priority;
+        size.basis = height ? (size.banner ? height : `calc(${height} - var(--rpp-image-reserve))`) : '';
+    }
+    if (size.banner === banner) return;
+    if (size.basis) {
+        const next = banner ? size.basis : `calc(${size.basis} + var(--rpp-image-reserve))`;
+        editor.style.setProperty('height', next, priority);
+    }
+    size.appliedHeight = editor.style.getPropertyValue('height');
+    size.appliedPriority = editor.style.getPropertyPriority('height');
+    size.banner = banner;
+}
+
 function applyView() {
     if (!panel) return;
     const ctx = getContext();
@@ -137,6 +162,7 @@ function applyView() {
         view = ctx.extensionSettings.moonlitCourtyardSuit?.personaHeaderView === 'banner' ? 'banner' : 'portrait';
         loadedPreference = true;
     }
+    syncEditorHeight(view === 'banner');
     toggleClass(panel, 'rpp-banner-header', view === 'banner');
     const button = $('#rpp-current-view-toggle', panel);
     const label = view === 'banner' ? 'Switch to portrait layout' : 'Switch to banner layout';
@@ -464,6 +490,14 @@ export function cleanup() {
     subscriptions.splice(0).forEach(unsubscribe => unsubscribe());
     listeners.splice(0).forEach(remove => remove());
     scheduleHero.cancel();
+    if (editorSizing) {
+        const { editor, height, priority, appliedHeight, appliedPriority } = editorSizing;
+        if (editor.style.getPropertyValue('height') === appliedHeight && editor.style.getPropertyPriority('height') === appliedPriority) {
+            if (height) editor.style.setProperty('height', height, priority);
+            else editor.style.removeProperty('height');
+        }
+        editorSizing = null;
+    }
     for (const [node, placeholder] of [...moved].reverse()) {
         if (placeholder.parentNode) placeholder.replaceWith(node);
     }
