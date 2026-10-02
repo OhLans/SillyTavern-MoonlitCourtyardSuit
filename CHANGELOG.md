@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.1.3 — 2026-10-02
+
+- Restored the current-persona portrait to the previous text-action layout's
+  250px height, retaining its original column width. Its size now stays stable
+  when the description editor is resized or the persona name wraps.
+- Enlarged the native description editor from a 180px to a 260px minimum height
+  in both layouts and fixed flex sizing ignoring manual height changes. Kept
+  the centered icons, native maximize control and responsive panel layout.
+  This is a CSS adjustment with no extra runtime work.
+
 ## 1.1.2 — 2026-10-02
 
 - Moved the native persona-list grid button into the manager heading, aligned

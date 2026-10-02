@@ -340,9 +340,9 @@
 
 .rpp-description #persona_description {
     width: 100%;
-    min-height: 180px;
+    min-height: 260px;
     margin: 0;
-    flex: 1;
+    flex: 0 0 auto;
 }
 
 .rpp-enabled #persona_controls > label {
@@ -404,6 +404,14 @@
     min-height: 210px;
     border-radius: var(--rpp-radius);
     background: var(--customBgColor2, var(--SmartThemeBlurTintColor));
+}
+
+/* Preserve the text-action layout's portrait size independently of the editor.
+ * Resizing the native textarea should add writing room without stretching it.
+ */
+.rpp-enabled:not(.rpp-banner-header) .rpp-current-media {
+    height: 250px;
+    align-self: start;
 }
 
 .rpp-current-image {

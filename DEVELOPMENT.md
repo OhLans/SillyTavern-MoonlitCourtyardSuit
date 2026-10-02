@@ -39,7 +39,7 @@ relative to `features/icons/style.css`.
   feature changes require a reload. Page disposal runs on `pagehide`, not
   `beforeunload`, so cancelling an unsaved-changes prompt cannot dismantle the UI.
 
-## Persona Panels (1.1.2)
+## Persona Panels (1.1.3)
 
 The native `persona_grid_toggle` and `user_avatar_block.gridView` still own the
 list view and its preference. Banner styling applies only outside `gridView`;
@@ -58,6 +58,9 @@ inside the original `persona_controls`. That wrapper uses `display: contents`
 so CSS can place the editor beside the portrait or below the banner, with the
 same centered action row underneath. View changes do not move native nodes.
 Disposal restores the editor and list grid button to their original positions.
+The portrait retains its original column width and a separate 250px height;
+it does not stretch when the editor grows. The native textarea has a 260px
+minimum height in either view, with native resize and maximize still available.
 
 List banners use separate lazy-loaded full-size images, added only when banner
 mode is first displayed. The native thumbnail nodes and sources stay untouched.
